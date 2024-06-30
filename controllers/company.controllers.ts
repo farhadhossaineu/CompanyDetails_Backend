@@ -28,12 +28,14 @@ export const createCompany = CatchAsyncError(
   }
 );
 
-export const getCompany = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const companies = await companyModel.find({});
+export const getCompany = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const companies = await companyModel.find({});
 
-  res.status(200).json(companies);
-};
+      res.status(200).json(companies);
+    } catch (error: any) {
+      next(new ErrorHandler(error.message, 404));
+    }
+  }
+);
