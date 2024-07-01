@@ -9,8 +9,6 @@ export interface IRegister {
   numberOfEmp: number;
 }
 
-const companyNames: string[] = [];
-
 export const createCompany = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -21,8 +19,6 @@ export const createCompany = CatchAsyncError(
         numberOfEmp,
       };
       await companyModel.create(company);
-
-      companyNames.push(name);
 
       res
         .status(200)
@@ -48,7 +44,9 @@ export const getCompany = CatchAsyncError(
 export const getCompanyNames = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.status(200).json(companyNames);
+      const companyDocs: IRegister[] = await companyModel.find({});
+      const companies: string[] = companyDocs.map((comp) => comp.name);
+      res.status(200).json({ success: true, companies });
     } catch (error: any) {
       next(new ErrorHandler(error.message, 404));
     }
